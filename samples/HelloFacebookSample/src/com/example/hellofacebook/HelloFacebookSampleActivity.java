@@ -262,7 +262,34 @@ public class HelloFacebookSampleActivity extends FragmentActivity {
     }
 
     private void onClickPostStatusUpdate() {
-        performPublish(PendingAction.POST_STATUS_UPDATE, canPresentShareDialog);
+        if (ShareDialog.canShow(SharePhotoContent.class))
+        {
+            Bitmap image = screenShot(getWindow().getDecorView().getRootView());
+            SharePhoto photo = new SharePhoto.Builder()
+                    .setBitmap(image)
+                    .build();
+
+            SharePhotoContent content = new SharePhotoContent.Builder()
+                    .addPhoto(photo)
+                    .build();
+            shareDialog.show(content);
+        }
+    }
+    
+    @Override
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+    
+    private Bitmap screenShot(View v) {
+        v.setDrawingCacheEnabled(true);
+        Bitmap b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888);
+        b = v.getDrawingCache();
+        //return saveBitmap(b);
+        /*Canvas c = new Canvas(b);
+        v.draw(c);*/
+        return b;
     }
 
     private void postStatusUpdate() {
